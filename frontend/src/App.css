@@ -1,0 +1,21 @@
+/* Google Fonts ko import kar rahe hain safe font choice ke liye */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif; /* Pura app modern lagega */
+  background-color: #f4f7f6; /* Light gray background */
+  color: #333;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,0 +1,133 @@
+.payment-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.payment-card {
+  background: white;
+  max-width: 400px;
+  width: 100%;
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12); /* Deep Shadow for premium feel */
+  text-align: center;
+}
+
+/* Kisko pay kar rahe hain (Header) */
+.receiver-info {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.receiver-title {
+  font-size: 12px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.receiver-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a2a47;
+  word-break: break-all;
+}
+
+/* Asali Amount Section (Clear Hierarchy) */
+.amount-section {
+  background-color: #f9fff9; /* Extremely Light Green */
+  border: 1px solid #e0f0e0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.payer-greeting {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.payer-name {
+  color: #333;
+  font-weight: 600;
+}
+
+.current-amount {
+  font-size: 48px;
+  font-weight: 700;
+  color: #28a745; /* Growth Green */
+  line-height: 1;
+  margin: 15px 0;
+}
+
+/* Subtle Pulsing Animation amounts jab change ho */
+@keyframes priceUpdate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); color: #dc3545; } /* Red pulse during increase */
+  100% { transform: scale(1); color: #28a745; }
+}
+
+.amount-updated {
+  animation: priceUpdate 1s ease;
+}
+
+/* Timer Section (Creates Urgency) */
+.timer-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #dc3545; /* Urgency Red */
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.timer-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.timer-text {
+  font-weight: 600;
+}
+
+/* QR Code Display (Clean Focus) */
+.qr-container {
+  margin-bottom: 30px;
+  padding: 20px;
+  display: inline-block;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  border: 1px solid #f0f0f0;
+}
+
+.scan-instruction {
+  font-size: 14px;
+  color: #666;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+/* Footer Section */
+.payment-footer {
+  font-size: 13px;
+  color: #aaa;
+  margin-top: 20px;
+}
+
+/* Error & Loading States */
+.error-msg, .loading {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.error-msg {
+  color: #dc3545;
+}

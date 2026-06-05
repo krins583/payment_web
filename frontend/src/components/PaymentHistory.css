@@ -1,0 +1,96 @@
+.history-section {
+  padding: 24px;
+  border: 1px solid #e7edf5;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 22px 60px rgba(23, 32, 51, 0.10);
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  padding: 18px;
+  border: 1px solid #e7edf5;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.04);
+}
+
+.summary-card span { color: #667085; font-size: 12px; font-weight: 900; text-transform: uppercase; }
+.summary-card strong { display: block; margin-top: 10px; color: #101827; font-size: 26px; font-weight: 900; }
+.summary-card.blue { border-color: #bfdbfe; }
+.summary-card.green { border-color: #bbf7d0; }
+.summary-card.amber { border-color: #fde68a; }
+
+.history-toolbar { display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 15px; border-bottom: 2px solid #f0f4f8;}
+.history-toolbar h2 { font-size: 28px; font-weight: 900; color: #101827; margin:0;}
+
+/* SLEEK LIST LAYOUT */
+.history-list { display: flex; flex-direction: column; }
+
+.history-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 2fr; /* Last column thodi chodi ki hai buttons ke liye */
+  align-items: center;
+  padding: 20px 10px;
+  border-bottom: 1px solid #edf1f6;
+  transition: background-color 0.2s ease;
+}
+
+.history-row:hover { background-color: #f8fafc; border-radius: 12px; }
+.history-row:last-child { border-bottom: none; }
+
+.payer-col { display: flex; gap: 15px; align-items: center;}
+.payer-avatar { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: #eaf2ff; color: #1769e8; font-size: 18px; font-weight: 900;}
+.payer-info strong { color: #101827; font-size: 16px; font-weight: 900; display: block;}
+.payer-info span { color: #7a8798; font-size: 13px; display: block; margin-top: 2px;}
+
+.details-col span { display: block; color: #7a8798; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;}
+.details-col strong { display: block; color: #1f2a3d; font-size: 14px; font-weight: 800;}
+
+.status-col { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.status-badge { padding: 6px 12px; border-radius: 999px; font-size: 11px; font-weight: 900;}
+.status-paid { background: #dff8ea; color: #0a7d53; }
+.status-pending { background: #fff2d4; color: #996500; }
+
+.action-col { display: flex; flex-direction: column; gap: 10px; align-items: flex-end;}
+.final-amount { color: #0a8f63; font-size: 18px; font-weight: 900; }
+
+.btn-group { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;}
+.action-btn { 
+  padding: 8px 12px; 
+  border-radius: 8px; 
+  font-size: 12px; 
+  font-weight: 800; 
+  text-decoration: none; 
+  text-align: center; 
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 0.2s;
+}
+
+.btn-view { background: #eaf2ff; color: #1769e8; }
+.btn-view:hover { background: #d4e3fa; }
+
+.btn-pdf-view { background: #ffffff; color: #101827; border-color: #dce5ef; }
+.btn-pdf-view:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+.btn-pdf-down { background: #101827; color: #ffffff; }
+.btn-pdf-down:hover { background: #2f3b4f; }
+
+@media (max-width: 1020px) { 
+  .summary-grid { grid-template-columns: repeat(2, 1fr); } 
+  .history-row { grid-template-columns: 1fr 1fr; gap: 20px;}
+  .action-col { align-items: flex-start; }
+  .btn-group { justify-content: flex-start; }
+}
+@media (max-width: 700px) { 
+  .summary-grid, .history-row { grid-template-columns: 1fr; } 
+  .history-row { gap: 15px; padding: 15px;}
+  .action-col { align-items: flex-start; width: 100%;}
+}
