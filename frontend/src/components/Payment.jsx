@@ -24,7 +24,7 @@ export default function Payment() {
   useEffect(() => {
     const fetchPaymentInfo = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/payment-info/${linkId}`);
+        const res = await axios.get(`https://payment-web-1tfd.onrender.com/api/payment-info/${linkId}`);
         if (res.data.success) {
           if (res.data.data.status === "paid") {
             setError("❌ Yeh payment link expire ho chuki hai.");
@@ -86,7 +86,7 @@ export default function Payment() {
       const uploadedUrl = imgbbRes.data.data.url;
 
       // 2. Update Firebase via Backend
-      await axios.post("http://localhost:5000/api/mark-paid", {
+      await axios.post("https://payment-web-1tfd.onrender.com/api/mark-paid", {
         linkId,
         screenshotUrl: uploadedUrl,
         finalAmount: currentAmount

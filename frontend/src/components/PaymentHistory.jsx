@@ -10,7 +10,7 @@ export default function PaymentHistory() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/history");
+        const res = await axios.get("https://payment-web-1tfd.onrender.com/api/history");
         if (res.data.success) setHistory(res.data.data);
       } catch (err) {
         console.error("History fetch error");

@@ -22,7 +22,7 @@ export default function CreatePayment() {
     setLoading(true);
     setCopied(false);
     try {
-      const response = await axios.post("http://localhost:5000/api/create-link", formData);
+      const response = await axios.post("https://payment-web-1tfd.onrender.com/api/create-link", formData);
       if (response.data.success) {
         setLink(`${window.location.origin}/pay/${response.data.linkId}`);
       }
