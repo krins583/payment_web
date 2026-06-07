@@ -1,40 +1,62 @@
-.dash-nav {
+.paynav {
   display: flex;
+  gap: 10px;
   width: fit-content;
-  margin: 0 auto 26px;
-  padding: 7px;
-  gap: 6px;
-  border: 1px solid #e5eaf2;
-  border-radius: 999px;
-  background: #ffffff;
-  box-shadow: 0 12px 36px rgba(23, 32, 51, 0.09);
+  margin: 18px 0 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.78);
+  box-shadow: 0 10px 28px rgba(54, 44, 28, 0.08);
 }
 
-.nav-btn {
-  min-height: 44px;
-  padding: 0 26px;
+.paynav-btn {
+  min-height: 46px;
+  padding: 0 18px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 13px;
   background: transparent;
-  color: #607086;
+  color: var(--muted);
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 950;
   cursor: pointer;
-  transition: all 180ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
-.nav-btn:hover {
-  color: #172033;
-  background: #f4f7fb;
+.paynav-btn span {
+  color: inherit;
+  opacity: 0.6;
+  font-size: 11px;
+  font-weight: 950;
 }
 
-.nav-btn.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, #1769e8, #0f8f72);
-  box-shadow: 0 10px 22px rgba(23, 105, 232, 0.26);
+.paynav-btn:hover {
+  background: #f3eadc;
+  color: var(--ink);
 }
 
-.nav-btn:focus-visible {
-  outline: 3px solid rgba(27, 102, 210, 0.22);
+.paynav-btn.active {
+  color: #fff8e7;
+  background: var(--teal-dark);
+  box-shadow: 0 12px 24px rgba(15, 118, 110, 0.20);
+}
+
+.paynav-btn:focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.22);
   outline-offset: 3px;
+}
+
+@media (max-width: 620px) {
+  .paynav {
+    width: 100%;
+  }
+
+  .paynav-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0 10px;
+  }
 }

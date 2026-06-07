@@ -2,25 +2,28 @@ import "./Navigation.css";
 
 export default function Navigation({ activeTab, setActiveTab }) {
   return (
-    <div className="dash-nav" role="tablist" aria-label="Dashboard sections">
+    <nav className="paynav" role="tablist" aria-label="Dashboard sections">
       <button
-        className={`nav-btn ${activeTab === "create" ? "active" : ""}`}
+        className={`paynav-btn ${activeTab === "create" ? "active" : ""}`}
         onClick={() => setActiveTab("create")}
         type="button"
         role="tab"
         aria-selected={activeTab === "create"}
       >
-        Create Payment
+        <span>01</span>
+        Create Link
       </button>
+
       <button
-        className={`nav-btn ${activeTab === "history" ? "active" : ""}`}
+        className={`paynav-btn ${activeTab === "history" ? "active" : ""}`}
         onClick={() => setActiveTab("history")}
         type="button"
         role="tab"
         aria-selected={activeTab === "history"}
       >
-        Payment History
+        <span>02</span>
+        Ledger History
       </button>
-    </div>
+    </nav>
   );
 }

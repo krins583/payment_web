@@ -2,42 +2,61 @@ import { useState } from "react";
 import Navigation from "./Navigation";
 import CreatePayment from "./CreatePayment";
 import PaymentHistory from "./PaymentHistory";
-import "./Dashboard.css"; 
+import "./Dashboard.css";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("create");
 
   return (
-    <main className="dashboard-page">
-      <div className="dashboard-container">
-        
-        {/* COMPACT HERO SECTION */}
-        <section className="dashboard-hero">
-          <div className="hero-copy">
-            <span className="eyebrow">Payment Link Studio</span>
-            <h1>Manage your smart UPI collections.</h1>
-            <p>Generate payment links with dynamic penalty rules, share them securely, and track every transaction in real-time.</p>
-          </div>
-          
-          <div className="hero-panel" aria-label="Quick Stats">
-            <div className="hero-panel-top">
-              <span>System Status</span>
-              <strong>Online</strong>
+    <main className="paydash-page">
+      <div className="paydash-shell">
+        <header className="paydash-header">
+          <div className="paydash-brand">
+            <div className="paydash-logo">₹</div>
+            <div>
+              <span>Dynamic UPI Console</span>
+              <h1>Payment operations, without the clutter.</h1>
             </div>
-            <div className="hero-panel-grid" style={{gridTemplateColumns: "1fr 1fr"}}>
-              <div><span>Speed</span><strong>Lightning</strong></div>
-              <div><span>Security</span><strong>256-bit</strong></div>
+          </div>
+
+          <div className="paydash-status">
+            <span className="status-dot" />
+            Server connected
+          </div>
+        </header>
+
+        <section className="paydash-hero">
+          <div>
+            <p className="paydash-kicker">Payment workspace</p>
+            <h2>Create links, apply rules, collect faster.</h2>
+            <p>
+              A focused dashboard for dynamic payment links, penalty timers,
+              customer proof uploads, and receipt-ready history.
+            </p>
+          </div>
+
+          <div className="hero-ledger">
+            <div>
+              <span>Mode</span>
+              <strong>UPI</strong>
+            </div>
+            <div>
+              <span>Penalty</span>
+              <strong>Timed</strong>
+            </div>
+            <div>
+              <span>Proof</span>
+              <strong>Upload</strong>
             </div>
           </div>
         </section>
 
-        {/* MODULAR NAVIGATION TAB COMPONENT */}
         <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* CONTENT RENDERING (Yeh aapki nayi files ko yahan layega) */}
-        {activeTab === "create" && <CreatePayment />}
-        {activeTab === "history" && <PaymentHistory />}
-        
+        <section className="paydash-content">
+          {activeTab === "create" && <CreatePayment />}
+          {activeTab === "history" && <PaymentHistory />}
+        </section>
       </div>
     </main>
   );

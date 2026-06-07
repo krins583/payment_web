@@ -1,133 +1,263 @@
-.payment-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.checkout-page {
   min-height: 100vh;
-  padding: 20px;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background:
+    linear-gradient(180deg, #fbf7ef 0%, #f0e4d2 100%);
+  color: #15130f;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-.payment-card {
-  background: white;
-  max-width: 400px;
-  width: 100%;
-  padding: 40px;
-  border-radius: 24px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12); /* Deep Shadow for premium feel */
-  text-align: center;
+.checkout-card,
+.checkout-state-card {
+  width: min(440px, 100%);
+  border: 1px solid #e8decf;
+  border-radius: 28px;
+  background: #fffdf8;
+  box-shadow: 0 24px 70px rgba(54, 44, 28, 0.16);
 }
 
-/* Kisko pay kar rahe hain (Header) */
-.receiver-info {
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #f0f0f0;
+.checkout-card {
+  padding: 24px;
 }
 
-.receiver-title {
+.checkout-header {
+  text-align: left;
+}
+
+.checkout-header span {
+  color: #0f766e;
   font-size: 12px;
-  color: #777;
+  font-weight: 950;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
-.receiver-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1a2a47;
-  word-break: break-all;
+.checkout-header h1 {
+  margin: 10px 0 8px;
+  font-size: 31px;
+  line-height: 1.05;
+  font-weight: 950;
 }
 
-/* Asali Amount Section (Clear Hierarchy) */
-.amount-section {
-  background-color: #f9fff9; /* Extremely Light Green */
-  border: 1px solid #e0f0e0;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
-.payer-greeting {
-  font-size: 16px;
-  color: #555;
-  margin-bottom: 5px;
-}
-
-.payer-name {
-  color: #333;
-  font-weight: 600;
-}
-
-.current-amount {
-  font-size: 48px;
-  font-weight: 700;
-  color: #28a745; /* Growth Green */
-  line-height: 1;
-  margin: 15px 0;
-}
-
-/* Subtle Pulsing Animation amounts jab change ho */
-@keyframes priceUpdate {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); color: #dc3545; } /* Red pulse during increase */
-  100% { transform: scale(1); color: #28a745; }
-}
-
-.amount-updated {
-  animation: priceUpdate 1s ease;
-}
-
-/* Timer Section (Creates Urgency) */
-.timer-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: #dc3545; /* Urgency Red */
+.checkout-header p {
+  margin: 0;
+  color: #706b61;
   font-size: 14px;
-  font-weight: 500;
+  line-height: 1.55;
+  font-weight: 650;
 }
 
-.timer-icon {
+.checkout-amount-block {
+  display: grid;
+  gap: 14px;
+  margin: 22px 0;
+  padding: 18px;
+  border-radius: 22px;
+  background: #15130f;
+  color: #fff8e7;
+}
+
+.checkout-amount-block span {
+  color: rgba(255, 248, 231, 0.66);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.checkout-amount-block strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 950;
+  word-break: break-word;
+}
+
+.timer-pill {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  color: #fff8e7;
+  background: rgba(255, 248, 231, 0.10);
+}
+
+.checkout-timer-icon {
   width: 16px;
   height: 16px;
 }
 
-.timer-text {
-  font-weight: 600;
-}
-
-/* QR Code Display (Clean Focus) */
-.qr-container {
-  margin-bottom: 30px;
-  padding: 20px;
-  display: inline-block;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-  border: 1px solid #f0f0f0;
-}
-
-.scan-instruction {
-  font-size: 14px;
-  color: #666;
-  margin-top: 15px;
-  font-weight: 500;
-}
-
-/* Footer Section */
-.payment-footer {
+.timer-pill span {
+  color: #fff8e7;
   font-size: 13px;
-  color: #aaa;
-  margin-top: 20px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
-/* Error & Loading States */
-.error-msg, .loading {
-  font-size: 18px;
-  font-weight: 600;
+.checkout-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.checkout-meta div {
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  border: 1px solid #e8decf;
+  border-radius: 16px;
+  background: #fffaf1;
+}
+
+.checkout-meta span,
+.proof-uploader span {
+  color: #706b61;
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.checkout-meta strong {
+  font-size: 14px;
+  font-weight: 900;
+  word-break: break-word;
+}
+
+.qr-shell {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px dashed #cab99f;
+  border-radius: 22px;
+  background: #fffaf1;
+}
+
+.qr-shell span {
+  color: #706b61;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.proof-uploader {
+  display: grid;
+  gap: 8px;
+  padding: 15px;
+  border: 1px solid #e8decf;
+  border-radius: 18px;
+  background: #fffaf1;
+  cursor: pointer;
+}
+
+.proof-uploader input {
+  width: 100%;
+  color: #15130f;
+  font-weight: 700;
+}
+
+.proof-uploader small {
+  color: #706b61;
+  font-weight: 650;
+}
+
+.checkout-submit {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: 17px;
+  background: #0b4f49;
+  color: #fff8e7;
+  font-size: 16px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.checkout-submit:disabled {
+  opacity: 0.68;
+  cursor: wait;
+}
+
+.checkout-success {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 24px 8px;
+}
+
+.success-mark {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  background: #e7f7ef;
+  color: #087443;
+  font-size: 42px;
+  font-weight: 950;
+}
+
+.checkout-success h1 {
+  margin: 6px 0 0;
+  font-size: 28px;
+}
+
+.checkout-success p {
+  max-width: 320px;
+  margin: 0;
+  color: #706b61;
+  line-height: 1.55;
+  font-weight: 650;
+}
+
+.checkout-state-card {
+  display: grid;
+  gap: 8px;
+  padding: 28px;
   text-align: center;
 }
 
-.error-msg {
-  color: #dc3545;
+.checkout-state-card strong {
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.checkout-state-card span {
+  color: #706b61;
+  font-weight: 650;
+}
+
+.checkout-state-card.error strong {
+  color: #b42318;
+}
+
+@media (max-width: 520px) {
+  .checkout-page {
+    padding: 12px;
+  }
+
+  .checkout-card {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .checkout-header h1 {
+    font-size: 27px;
+  }
+
+  .checkout-amount-block strong {
+    font-size: 44px;
+  }
+
+  .checkout-meta {
+    grid-template-columns: 1fr;
+  }
 }
