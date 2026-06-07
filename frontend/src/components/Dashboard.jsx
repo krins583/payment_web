@@ -7,10 +7,11 @@ import "./Dashboard.css";
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("create");
 
+  // LOGOUT FUNCTIONALITY
   const handleLogout = () => {
-  localStorage.removeItem("isAdminAuthenticated"); // Token remove ho jayega
-  window.location.href = "/"; // Auto lock ho jayega screen
-};
+    localStorage.removeItem("isAdminAuthenticated");
+    window.location.href = "/"; // Wapas login page par bhej dega
+  };
 
   return (
     <main className="paydash-page">
@@ -24,9 +25,16 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="paydash-status">
-            <span className="status-dot" />
-            Server connected
+          <div className="header-actions">
+            <div className="paydash-status">
+              <span className="status-dot" />
+              Server connected
+            </div>
+            
+            {/* NEW LOGOUT BUTTON */}
+            <button onClick={handleLogout} className="logout-btn">
+              Logout
+            </button>
           </div>
         </header>
 

@@ -87,6 +87,13 @@ body {
   letter-spacing: 0;
 }
 
+/* Naya Layout Header buttons ke liye */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .paydash-status {
   display: inline-flex;
   align-items: center;
@@ -108,6 +115,28 @@ body {
   border-radius: 99px;
   background: var(--green);
   box-shadow: 0 0 0 4px rgba(8, 116, 67, 0.12);
+}
+
+/* Aesthetic Logout Button Styling */
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid #fecdca;
+  border-radius: 999px;
+  background: #fef3f2;
+  color: #b42318;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #fee4e2;
+  border-color: #fca5a5;
 }
 
 .paydash-hero {
@@ -231,8 +260,14 @@ body {
     flex-direction: column;
   }
 
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .paydash-status {
     justify-content: center;
+    flex: 1;
   }
 
   .paydash-hero {

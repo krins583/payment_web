@@ -5,7 +5,7 @@ import "./PaymentHistory.css";
 
 export default function PaymentHistory() {
   const [history, setHistory] = useState([]);
-  const [copiedId, setCopiedId] = useState(null); // Copy button animation ke liye
+  const [copiedId, setCopiedId] = useState(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -53,7 +53,7 @@ export default function PaymentHistory() {
     return str;
   };
 
-  // Naya: Copy Link Function
+  // Copy Link Function
   const handleCopyLink = async (linkId) => {
     const url = `${window.location.origin}/pay/${linkId}`;
     try {
@@ -65,15 +65,13 @@ export default function PaymentHistory() {
     }
   };
 
-  // Naya: Delete Link Function
+  // Delete Link Function
   const handleDelete = async (linkId) => {
     if (!window.confirm("Are you sure you want to delete this payment record?")) return;
     
     try {
-      // Backend ko delete request bhejenge
       const res = await axios.delete(`https://payment-web-1tfd.onrender.com/api/delete-link/${linkId}`);
       if (res.data.success) {
-        // UI se turant hata denge bina refresh kiye
         setHistory(history.filter(item => item.id !== linkId));
       } else {
         alert("Could not delete. Try again.");
@@ -84,7 +82,7 @@ export default function PaymentHistory() {
     }
   };
 
-  // PERFECTLY ALIGNED CHECKBOOK STYLE PDF
+  // PERFECTLY ALIGNED CHECKBOOK STYLE PDF WITH UTR/TXN LOGIC
   const handleReceipt = (item, action) => {
     const doc = new jsPDF({ orientation: "landscape", format: [210, 110] });
 
@@ -101,21 +99,34 @@ export default function PaymentHistory() {
     const row3 = 75;
     const rowFooter = 88;
 
+    // Outer Border
     doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.4);
     doc.rect(startX, startY, 190, 90);
 
+    // Header Title
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
     doc.text("PAYMENT RECEIPT", col1, 24);
 
+    // No & Date (With UTR OCR result logic)
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     
     doc.text("No", 125, 18);
     doc.text(":", 135, 18);
-    doc.text(`TXN-${item.id.substring(0, 8).toUpperCase()}`, 140, 18);
+    
+    const displayId = item.utrNumber || `TXN-${item.id.substring(0, 8).toUpperCase()}`;
+    
+    // Agar "not available" ka message bada hai, to line width fix rakhne ke liye font chota karega
+    if (displayId.length > 15) {
+      doc.setFontSize(8);
+      doc.text(displayId, 140, 18);
+      doc.setFontSize(10); 
+    } else {
+      doc.text(displayId, 140, 18);
+    }
     
     doc.setDrawColor(91, 155, 213); 
     doc.setLineWidth(0.2);
@@ -130,6 +141,7 @@ export default function PaymentHistory() {
     doc.setLineWidth(0.5);
     doc.line(startX, rowHeader, endX, rowHeader);
 
+    // Row 1: Received From
     doc.setFontSize(10);
     doc.text("Received From", col1, 40);
     doc.text(":", col2, 40);
@@ -139,6 +151,7 @@ export default function PaymentHistory() {
     doc.setLineWidth(0.2);
     doc.line(startX, row1, endX, row1);
 
+    // Row 2: Amount
     doc.setTextColor(0, 0, 0);
     doc.text("Amount", col1, 54);
     doc.text(":", col2, 54);
@@ -163,6 +176,7 @@ export default function PaymentHistory() {
     doc.setLineWidth(0.2);
     doc.line(startX, row2, colRight, row2);
 
+    // Row 3: Payment For
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text("Payment For", col1, 69);
@@ -171,6 +185,7 @@ export default function PaymentHistory() {
 
     doc.line(startX, row3, colRight, row3);
 
+    // Row 4: Received By & Sign
     doc.text("Received By", col1, 83);
     doc.text(":", col2, 83);
     doc.text(item.upiId || "N/A", col3, 83);
@@ -179,6 +194,7 @@ export default function PaymentHistory() {
     doc.rect(colRight, row2, 45, 28, "D"); 
     doc.text("Sign", colRight + 22.5, 85, { align: "center" });
 
+    // Footer Banner
     doc.setFillColor(91, 155, 213);
     doc.rect(startX, rowFooter, 190, 12, "F"); 
 
@@ -234,7 +250,8 @@ export default function PaymentHistory() {
             <div className="ledger-detail">
               <span>Base</span>
               <strong>{formatAmount(item.basePrice)}</strong>
-              <small>{item.upiId}</small>
+              {/* UTR Number dikhayega agar scan hua hai, nahi toh sirf UPI ID dikhayega */}
+              <small>{item.utrNumber || item.upiId}</small>
             </div>
 
             <div className="ledger-status">
