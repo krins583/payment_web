@@ -4,7 +4,12 @@ import "./CreatePayment.css";
 
 export default function CreatePayment() {
   const [formData, setFormData] = useState({
-    upiId: "", basePrice: "", payerName: "", payerNumber: "", penaltyAmount: 10, penaltyTime: 10,
+    upiId: "",
+    basePrice: "",
+    payerName: "",
+    payerNumber: "",
+    penaltyAmount: 10,
+    penaltyTime: 10,
   });
 
   const [link, setLink] = useState("");
@@ -14,13 +19,18 @@ export default function CreatePayment() {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const formatAmount = (value) => {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(Number(value) || 0);
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(Number(value) || 0);
   };
 
   const handleCreate = async (e) => {
     e.preventDefault();
     setLoading(true);
     setCopied(false);
+
     try {
       const response = await axios.post("https://payment-web-1tfd.onrender.com/api/create-link", formData);
       if (response.data.success) {
@@ -40,59 +50,135 @@ export default function CreatePayment() {
     setTimeout(() => setCopied(false), 1800);
   };
 
+  const projectedAmount = (Number(formData.basePrice) || 0) + (Number(formData.penaltyAmount) || 0);
+
   return (
-    <section className="admin-dashboard">
-      <div className="form-panel">
-        <div className="dashboard-header">
-          <span style={{color: "#1769e8", fontWeight: "bold", fontSize:"12px"}}>NEW COLLECTION</span>
-          <h2>Create Payment Link</h2>
-          <p>Add details to generate a dynamic UPI payment URL.</p>
+    <section className="create-pay">
+      <div className="create-form-card">
+        <div className="create-heading">
+          <div>
+            <span>New payment link</span>
+            <h2>Build a payable link</h2>
+          </div>
+          <p>Enter UPI, payer, and penalty details. The backend flow remains unchanged.</p>
         </div>
 
-        <form onSubmit={handleCreate} className="form-grid">
-          <div className="form-group"><label>Receiver UPI ID</label><input name="upiId" onChange={handleChange} required /></div>
-          <div className="form-group"><label>Base Price (₹)</label><input name="basePrice" type="number" onChange={handleChange} required /></div>
-          <div className="form-group"><label>Payer Name</label><input name="payerName" onChange={handleChange} /></div>
-          <div className="form-group"><label>Payer WhatsApp</label><input name="payerNumber" onChange={handleChange} /></div>
+        <form onSubmit={handleCreate} className="create-grid">
+          <label className="create-field">
+            <span>Receiver UPI ID</span>
+            <input
+              name="upiId"
+              value={formData.upiId}
+              onChange={handleChange}
+              placeholder="merchant@upi"
+              required
+            />
+          </label>
 
-          <div className="penalty-section">
-            <div className="penalty-title">
-              <span className="penalty-icon">₹</span>
-              <div>
-                <strong>Dynamic Pricing Rules</strong>
-                <small>Amount increases after the selected interval.</small>
-              </div>
+          <label className="create-field">
+            <span>Base Price</span>
+            <input
+              name="basePrice"
+              type="number"
+              value={formData.basePrice}
+              onChange={handleChange}
+              placeholder="2500"
+              required
+            />
+          </label>
+
+          <label className="create-field">
+            <span>Payer Name</span>
+            <input
+              name="payerName"
+              value={formData.payerName}
+              onChange={handleChange}
+              placeholder="Customer name"
+            />
+          </label>
+
+          <label className="create-field">
+            <span>Payer WhatsApp</span>
+            <input
+              name="payerNumber"
+              value={formData.payerNumber}
+              onChange={handleChange}
+              placeholder="9876543210"
+            />
+          </label>
+
+          <div className="rule-box">
+            <div className="rule-copy">
+              <strong>Penalty rule</strong>
+              <small>Price increases by the penalty amount after every interval.</small>
             </div>
-            <div className="form-group"><label>Penalty Amount</label><input name="penaltyAmount" type="number" value={formData.penaltyAmount} onChange={handleChange} /></div>
-            <div className="form-group"><label>Interval (Mins)</label><input name="penaltyTime" type="number" value={formData.penaltyTime} onChange={handleChange} /></div>
+
+            <label className="create-field">
+              <span>Penalty Amount</span>
+              <input
+                name="penaltyAmount"
+                type="number"
+                value={formData.penaltyAmount}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label className="create-field">
+              <span>Interval Minutes</span>
+              <input
+                name="penaltyTime"
+                type="number"
+                value={formData.penaltyTime}
+                onChange={handleChange}
+              />
+            </label>
           </div>
 
-          <button type="submit" className="generate-btn" disabled={loading}>
-            {loading ? "Generating..." : "Generate Payment Link"}
+          <button type="submit" className="create-submit" disabled={loading}>
+            {loading ? "Creating secure link..." : "Generate Payment Link"}
           </button>
         </form>
 
         {link && (
-          <div className="result-box">
-            <div><span style={{color:"#0f8f72", fontWeight:"bold", fontSize:"12px"}}>LINK READY</span><br/><a href={link} target="_blank" rel="noreferrer">{link}</a></div>
-            <div className="result-actions">
-              <button onClick={copyLink}>{copied ? "Copied" : "Copy"}</button>
+          <div className="created-link-box">
+            <div>
+              <span>Generated URL</span>
+              <a href={link} target="_blank" rel="noreferrer">{link}</a>
+            </div>
+
+            <div className="link-actions">
+              <button onClick={copyLink} type="button">{copied ? "Copied" : "Copy"}</button>
               <a href={link} target="_blank" rel="noreferrer">Open</a>
             </div>
           </div>
         )}
       </div>
 
-      <aside className="preview-panel">
-        <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
-          <span style={{color:"#8be7cf", fontWeight:"bold"}}>PREVIEW</span>
-          <span className="preview-status">Ready</span>
+      <aside className="create-preview-card">
+        <div className="preview-strip">
+          <span>Checkout preview</span>
+          <strong>UPI</strong>
         </div>
-        <div className="preview-amount">{formatAmount(formData.basePrice)}</div>
-        <div className="preview-details">
-          <div><span>RECEIVER</span><strong>{formData.upiId || "Waiting..."}</strong></div>
-          <div><span>PAYER</span><strong>{formData.payerName || "Guest"}</strong></div>
-          <div><span>PENALTY RULE</span><strong>{formatAmount(formData.penaltyAmount)} every {formData.penaltyTime || 0}m</strong></div>
+
+        <div className="preview-price">{formatAmount(formData.basePrice)}</div>
+
+        <div className="preview-stack">
+          <div>
+            <span>Receiver</span>
+            <strong>{formData.upiId || "UPI ID pending"}</strong>
+          </div>
+          <div>
+            <span>Payer</span>
+            <strong>{formData.payerName || "Guest payer"}</strong>
+          </div>
+          <div>
+            <span>Penalty rule</span>
+            <strong>{formatAmount(formData.penaltyAmount)} every {formData.penaltyTime || 0}m</strong>
+          </div>
+          <div>
+            <span>After first penalty</span>
+            <strong>{formatAmount(projectedAmount)}</strong>
+          </div>
         </div>
       </aside>
     </section>
