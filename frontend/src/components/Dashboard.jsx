@@ -7,6 +7,11 @@ import "./Dashboard.css";
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("create");
 
+  const handleLogout = () => {
+  localStorage.removeItem("isAdminAuthenticated"); // Token remove ho jayega
+  window.location.href = "/"; // Auto lock ho jayega screen
+};
+
   return (
     <main className="paydash-page">
       <div className="paydash-shell">

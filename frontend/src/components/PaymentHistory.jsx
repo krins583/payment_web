@@ -5,6 +5,7 @@ import "./PaymentHistory.css";
 
 export default function PaymentHistory() {
   const [history, setHistory] = useState([]);
+  const [copiedId, setCopiedId] = useState(null); // Copy button animation ke liye
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -52,40 +53,63 @@ export default function PaymentHistory() {
     return str;
   };
 
+  // Naya: Copy Link Function
+  const handleCopyLink = async (linkId) => {
+    const url = `${window.location.origin}/pay/${linkId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedId(linkId);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      alert("Failed to copy link");
+    }
+  };
+
+  // Naya: Delete Link Function
+  const handleDelete = async (linkId) => {
+    if (!window.confirm("Are you sure you want to delete this payment record?")) return;
+    
+    try {
+      // Backend ko delete request bhejenge
+      const res = await axios.delete(`https://payment-web-1tfd.onrender.com/api/delete-link/${linkId}`);
+      if (res.data.success) {
+        // UI se turant hata denge bina refresh kiye
+        setHistory(history.filter(item => item.id !== linkId));
+      } else {
+        alert("Could not delete. Try again.");
+      }
+    } catch (error) {
+      console.error("Delete error", error);
+      alert("Error deleting the link");
+    }
+  };
+
   // PERFECTLY ALIGNED CHECKBOOK STYLE PDF
   const handleReceipt = (item, action) => {
     const doc = new jsPDF({ orientation: "landscape", format: [210, 110] });
 
-    // Grid Coordinates (Millimeters)
     const startX = 10;
     const startY = 10;
-    const endX = 200; // 10 (Left Margin) + 190 (Width)
-    
-    // Column positions
-    const col1 = 15; // Label start
-    const col2 = 45; // Colon ":" position
-    const col3 = 50; // Text Value start
-    const colRight = 155; // Right Boxes Start
-    
-    // Row Lines (Y coordinates)
+    const endX = 200; 
+    const col1 = 15; 
+    const col2 = 45; 
+    const col3 = 50; 
+    const colRight = 155; 
     const rowHeader = 32;
     const row1 = 45;
     const row2 = 60;
     const row3 = 75;
     const rowFooter = 88;
 
-    // 1. OUTER BLACK BORDER
     doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.4);
     doc.rect(startX, startY, 190, 90);
 
-    // 2. HEADER SECTION
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
     doc.text("PAYMENT RECEIPT", col1, 24);
 
-    // No & Date
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     
@@ -93,48 +117,42 @@ export default function PaymentHistory() {
     doc.text(":", 135, 18);
     doc.text(`TXN-${item.id.substring(0, 8).toUpperCase()}`, 140, 18);
     
-    doc.setDrawColor(91, 155, 213); // Light Blue Lines
+    doc.setDrawColor(91, 155, 213); 
     doc.setLineWidth(0.2);
-    doc.line(140, 20, 195, 20); // Exact line under text
+    doc.line(140, 20, 195, 20); 
 
     doc.text("Date", 125, 26);
     doc.text(":", 135, 26);
     doc.text(formatDate(item.paidAt || item.createdAt), 140, 26);
     doc.line(140, 28, 195, 28);
 
-    // Header Separator Line
     doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.5);
     doc.line(startX, rowHeader, endX, rowHeader);
 
-    // 3. ROW 1: RECEIVED FROM
     doc.setFontSize(10);
     doc.text("Received From", col1, 40);
     doc.text(":", col2, 40);
     doc.text(`${item.payerName || "Guest"} (${item.payerNumber || "N/A"})`, col3, 40);
 
-    // Row 1 Blue Line (Spans full width)
     doc.setDrawColor(91, 155, 213);
     doc.setLineWidth(0.2);
     doc.line(startX, row1, endX, row1);
 
-    // 4. ROW 2: AMOUNT
     doc.setTextColor(0, 0, 0);
     doc.text("Amount", col1, 54);
     doc.text(":", col2, 54);
 
     const totalAmount = item.paidAmount || item.basePrice;
     
-    // Amount in Words (Blue Italic)
     doc.setTextColor(91, 155, 213);
     doc.setFont("helvetica", "italic");
     doc.text(numberToWords(totalAmount), col3, 54);
 
-    // Numeric Amount Box (Light Blue)
     doc.setFillColor(218, 227, 243); 
     doc.setDrawColor(91, 155, 213);
     doc.setLineWidth(0.3);
-    doc.rect(colRight, row1, 45, 15, "FD"); // Fits exactly between row1 and row2
+    doc.rect(colRight, row1, 45, 15, "FD"); 
 
     doc.setTextColor(0, 0, 0);
     doc.setFont("helvetica", "bold");
@@ -142,33 +160,27 @@ export default function PaymentHistory() {
     doc.text("Rs.", colRight + 3, 55);
     doc.text(new Intl.NumberFormat("en-IN").format(totalAmount), colRight + 42, 55, { align: "right" });
 
-    // Row 2 Blue Line (Stops at the right box)
     doc.setLineWidth(0.2);
     doc.line(startX, row2, colRight, row2);
 
-    // 5. ROW 3: PAYMENT FOR
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text("Payment For", col1, 69);
     doc.text(":", col2, 69);
     doc.text(`Base Amount + Penalty (${item.penaltyAmount} per ${item.penaltyTime}m)`, col3, 69);
 
-    // Row 3 Blue Line (Stops at the right box)
     doc.line(startX, row3, colRight, row3);
 
-    // 6. ROW 4: RECEIVED BY & SIGN BOX
     doc.text("Received By", col1, 83);
     doc.text(":", col2, 83);
     doc.text(item.upiId || "N/A", col3, 83);
 
-    // Sign Box (Empty)
     doc.setDrawColor(91, 155, 213);
-    doc.rect(colRight, row2, 45, 28, "D"); // Fits exactly between row2 and Footer
+    doc.rect(colRight, row2, 45, 28, "D"); 
     doc.text("Sign", colRight + 22.5, 85, { align: "center" });
 
-    // 7. BOTTOM BLUE BANNER (Footer)
     doc.setFillColor(91, 155, 213);
-    doc.rect(startX, rowFooter, 190, 12, "F"); // 12mm height footer
+    doc.rect(startX, rowFooter, 190, 12, "F"); 
 
     if (item.screenshotUrl) {
       doc.setTextColor(255, 255, 255);
@@ -245,7 +257,17 @@ export default function PaymentHistory() {
                   </div>
                 </>
               ) : (
-                <span className="waiting-text">Waiting for payment</span>
+                <div className="pending-actions">
+                  <span className="waiting-text">Waiting for payment</span>
+                  <div>
+                    <button onClick={() => handleCopyLink(item.id)} className="btn-copy">
+                      {copiedId === item.id ? "Copied!" : "Copy Link"}
+                    </button>
+                    <button onClick={() => handleDelete(item.id)} className="btn-delete">
+                      Delete
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           </article>

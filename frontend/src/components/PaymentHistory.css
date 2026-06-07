@@ -249,4 +249,28 @@
   .ledger-actions div {
     justify-content: flex-start;
   }
+
+  /* Naye Pending Actions ke Styles */
+.pending-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.btn-copy {
+  color: #0f766e !important;
+  border-color: #0f766e !important;
+  background: #f0fdf4 !important;
+}
+
+.btn-delete {
+  color: #b42318 !important;
+  border-color: #fecdca !important;
+  background: #fef3f2 !important;
+}
+
+.btn-delete:hover {
+  background: #fee4e2 !important;
+}
 }
