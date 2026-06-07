@@ -26,10 +26,10 @@ export default function Dashboard() {
         </header>
 
         <section className="paydash-hero">
-          <div>
+          <div className="hero-copy-block">
             <p className="paydash-kicker">Payment workspace</p>
             <h2>Create links, apply rules, collect faster.</h2>
-            <p>
+            <p className="hero-description">
               A focused dashboard for dynamic payment links, penalty timers,
               customer proof uploads, and receipt-ready history.
             </p>
