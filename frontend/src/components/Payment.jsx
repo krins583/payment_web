@@ -181,8 +181,14 @@ export default function Payment() {
                 level="M"
                 includeMargin
               />
-              <span>Scan with any UPI app</span>
+              <span>Scan with another device</span>
             </div>
+
+            {/* DIRECT MOBILE PAYMENT BUTTON */}
+            <div className="upi-divider">Or pay on mobile</div>
+            <a href={upiString} className="direct-pay-btn">
+              ⚡ Pay via GPay, PhonePe, Paytm
+            </a>
 
             <label className="proof-uploader">
               <span>Upload payment screenshot</span>

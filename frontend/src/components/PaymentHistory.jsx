@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import "./PaymentHistory.css";
 
 export default function PaymentHistory() {
@@ -27,89 +26,156 @@ export default function PaymentHistory() {
     }).format(Number(value) || 0);
   };
 
-  const formatPdfAmount = (value) => {
-    return "Rs. " + new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(Number(value) || 0);
-  };
-
   const formatDate = (timestamp) => {
     if (!timestamp) return "N/A";
     const date = new Date(timestamp);
     return date.toLocaleString("en-IN", {
       day: "2-digit",
       month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
+      year: "numeric"
     });
   };
 
+  const numberToWords = (num) => {
+    if (num === 0) return "Zero";
+    const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    if ((num = num.toString()).length > 9) return 'Overflow';
+    let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+    if (!n) return '';
+    let str = '';
+    str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+    str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+    str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+    str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+    str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'Only' : 'Only';
+    return str;
+  };
+
+  // PERFECTLY ALIGNED CHECKBOOK STYLE PDF
   const handleReceipt = (item, action) => {
-    const doc = new jsPDF();
+    const doc = new jsPDF({ orientation: "landscape", format: [210, 110] });
 
-    doc.setFillColor(21, 19, 15);
-    doc.rect(0, 0, 210, 34, "F");
-    doc.setTextColor(255, 248, 231);
-    doc.setFontSize(20);
+    // Grid Coordinates (Millimeters)
+    const startX = 10;
+    const startY = 10;
+    const endX = 200; // 10 (Left Margin) + 190 (Width)
+    
+    // Column positions
+    const col1 = 15; // Label start
+    const col2 = 45; // Colon ":" position
+    const col3 = 50; // Text Value start
+    const colRight = 155; // Right Boxes Start
+    
+    // Row Lines (Y coordinates)
+    const rowHeader = 32;
+    const row1 = 45;
+    const row2 = 60;
+    const row3 = 75;
+    const rowFooter = 88;
+
+    // 1. OUTER BLACK BORDER
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.4);
+    doc.rect(startX, startY, 190, 90);
+
+    // 2. HEADER SECTION
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("PAYMENT RECEIPT", 14, 22);
+    doc.text("PAYMENT RECEIPT", col1, 24);
 
-    doc.setTextColor(40, 40, 40);
+    // No & Date
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text(`Receipt ID: TXN-${item.id.substring(0, 8).toUpperCase()}`, 14, 46);
-    doc.text(`Date & Time: ${formatDate(item.paidAt || item.createdAt)}`, 14, 53);
-    doc.text(`Status: ${item.status.toUpperCase()}`, 14, 60);
+    
+    doc.text("No", 125, 18);
+    doc.text(":", 135, 18);
+    doc.text(`TXN-${item.id.substring(0, 8).toUpperCase()}`, 140, 18);
+    
+    doc.setDrawColor(91, 155, 213); // Light Blue Lines
+    doc.setLineWidth(0.2);
+    doc.line(140, 20, 195, 20); // Exact line under text
 
+    doc.text("Date", 125, 26);
+    doc.text(":", 135, 26);
+    doc.text(formatDate(item.paidAt || item.createdAt), 140, 26);
+    doc.line(140, 28, 195, 28);
+
+    // Header Separator Line
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.5);
+    doc.line(startX, rowHeader, endX, rowHeader);
+
+    // 3. ROW 1: RECEIVED FROM
+    doc.setFontSize(10);
+    doc.text("Received From", col1, 40);
+    doc.text(":", col2, 40);
+    doc.text(`${item.payerName || "Guest"} (${item.payerNumber || "N/A"})`, col3, 40);
+
+    // Row 1 Blue Line (Spans full width)
+    doc.setDrawColor(91, 155, 213);
+    doc.setLineWidth(0.2);
+    doc.line(startX, row1, endX, row1);
+
+    // 4. ROW 2: AMOUNT
+    doc.setTextColor(0, 0, 0);
+    doc.text("Amount", col1, 54);
+    doc.text(":", col2, 54);
+
+    const totalAmount = item.paidAmount || item.basePrice;
+    
+    // Amount in Words (Blue Italic)
+    doc.setTextColor(91, 155, 213);
+    doc.setFont("helvetica", "italic");
+    doc.text(numberToWords(totalAmount), col3, 54);
+
+    // Numeric Amount Box (Light Blue)
+    doc.setFillColor(218, 227, 243); 
+    doc.setDrawColor(91, 155, 213);
+    doc.setLineWidth(0.3);
+    doc.rect(colRight, row1, 45, 15, "FD"); // Fits exactly between row1 and row2
+
+    doc.setTextColor(0, 0, 0);
     doc.setFont("helvetica", "bold");
-    doc.text("Billed To:", 14, 72);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Name: ${item.payerName || "Guest"}`, 14, 79);
-    doc.text(`Phone: ${item.payerNumber || "N/A"}`, 14, 86);
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Paid To UPI:", 120, 72);
-    doc.setFont("helvetica", "normal");
-    doc.text(item.upiId || "N/A", 120, 79);
-
-    const tableData = [
-      ["Base Amount", formatPdfAmount(item.basePrice)],
-      [`Dynamic Penalty (${item.penaltyAmount} per ${item.penaltyTime}m)`, formatPdfAmount((item.paidAmount || item.basePrice) - item.basePrice)],
-    ];
-
-    autoTable(doc, {
-      startY: 96,
-      head: [["Description", "Amount"]],
-      body: tableData,
-      theme: "grid",
-      headStyles: { fillColor: [21, 19, 15], textColor: [255, 248, 231] },
-      styles: { fontSize: 10, cellPadding: 5 },
-      columnStyles: { 1: { halign: "right", fontStyle: "bold" } },
-    });
-
-    const finalY = doc.lastAutoTable.finalY + 12;
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("Total Paid:", 130, finalY);
-    doc.setTextColor(8, 116, 67);
     doc.setFontSize(14);
-    doc.text(formatPdfAmount(item.paidAmount || item.basePrice), 195, finalY, { align: "right" });
+    doc.text("Rs.", colRight + 3, 55);
+    doc.text(new Intl.NumberFormat("en-IN").format(totalAmount), colRight + 42, 55, { align: "right" });
 
-    doc.setTextColor(50, 50, 50);
+    // Row 2 Blue Line (Stops at the right box)
+    doc.setLineWidth(0.2);
+    doc.line(startX, row2, colRight, row2);
+
+    // 5. ROW 3: PAYMENT FOR
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text("Payment Proof Reference:", 14, finalY + 15);
+    doc.text("Payment For", col1, 69);
+    doc.text(":", col2, 69);
+    doc.text(`Base Amount + Penalty (${item.penaltyAmount} per ${item.penaltyTime}m)`, col3, 69);
+
+    // Row 3 Blue Line (Stops at the right box)
+    doc.line(startX, row3, colRight, row3);
+
+    // 6. ROW 4: RECEIVED BY & SIGN BOX
+    doc.text("Received By", col1, 83);
+    doc.text(":", col2, 83);
+    doc.text(item.upiId || "N/A", col3, 83);
+
+    // Sign Box (Empty)
+    doc.setDrawColor(91, 155, 213);
+    doc.rect(colRight, row2, 45, 28, "D"); // Fits exactly between row2 and Footer
+    doc.text("Sign", colRight + 22.5, 85, { align: "center" });
+
+    // 7. BOTTOM BLUE BANNER (Footer)
+    doc.setFillColor(91, 155, 213);
+    doc.rect(startX, rowFooter, 190, 12, "F"); // 12mm height footer
 
     if (item.screenshotUrl) {
-      doc.setTextColor(15, 118, 110);
-      doc.textWithLink("Click here to view original screenshot", 14, finalY + 22, { url: item.screenshotUrl });
-    } else {
-      doc.text("Not provided", 14, finalY + 22);
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.textWithLink("View Verification Screenshot (Payment Proof)", 105, 96, { url: item.screenshotUrl, align: "center" });
     }
-
-    doc.setTextColor(130, 130, 130);
-    doc.setFontSize(9);
-    doc.text("Electronically generated receipt by Dynamic UPI Console.", 105, 280, { align: "center" });
 
     if (action === "view") {
       window.open(doc.output("bloburl"), "_blank");
