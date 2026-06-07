@@ -62,12 +62,14 @@ app.get("/api/payment-info/:linkId", async (req, res) => {
 // 3. MARK AS PAID API (Payer upload karega screenshot)
 app.post("/api/mark-paid", async (req, res) => {
   try {
-    const { linkId, screenshotUrl, finalAmount } = req.body;
+    // ADDED: utrNumber ko body se receive karna
+    const { linkId, screenshotUrl, finalAmount, utrNumber } = req.body;
     
     await db.collection("paymentLinks").doc(linkId).update({
       status: "paid",
       screenshotUrl: screenshotUrl,
-      paidAmount: finalAmount, // Timer ke sath kitna hua tha
+      paidAmount: finalAmount, 
+      utrNumber: utrNumber || null, // ADDED: Database mein UTR save karna
       paidAt: Date.now()
     });
 
@@ -89,6 +91,17 @@ app.get("/api/history", async (req, res) => {
     res.status(200).json({ success: true, data: historyData });
   } catch (error) {
     res.status(500).json({ error: "History fetch fail" });
+  }
+});
+
+// 5. DELETE LINK API (Nayi API - Delete Button ke liye)
+app.delete("/api/delete-link/:id", async (req, res) => {
+  try {
+    const linkId = req.params.id;
+    await db.collection("paymentLinks").doc(linkId).delete();
+    res.status(200).json({ success: true, message: "Link deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
