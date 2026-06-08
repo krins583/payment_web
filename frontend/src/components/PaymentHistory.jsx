@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 import "./PaymentHistory.css";
 
 export default function PaymentHistory() {
   const [history, setHistory] = useState([]);
   const [copiedId, setCopiedId] = useState(null);
+  
+  // Naye Filters State
+  const [dateFilter, setDateFilter] = useState("all");
+  const [amountFilter, setAmountFilter] = useState("all");
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -16,7 +22,10 @@ export default function PaymentHistory() {
         console.error("History fetch error");
       }
     };
+    
     fetchHistory();
+    const intervalId = setInterval(() => { fetchHistory(); }, 10000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const formatAmount = (value) => {
@@ -53,7 +62,6 @@ export default function PaymentHistory() {
     return str;
   };
 
-  // Copy Link Function
   const handleCopyLink = async (linkId) => {
     const url = `${window.location.origin}/pay/${linkId}`;
     try {
@@ -65,10 +73,8 @@ export default function PaymentHistory() {
     }
   };
 
-  // Delete Link Function
   const handleDelete = async (linkId) => {
     if (!window.confirm("Are you sure you want to delete this payment record?")) return;
-    
     try {
       const res = await axios.delete(`https://payment-web-1tfd.onrender.com/api/delete-link/${linkId}`);
       if (res.data.success) {
@@ -82,48 +88,117 @@ export default function PaymentHistory() {
     }
   };
 
-  // PERFECTLY ALIGNED CHECKBOOK STYLE PDF WITH UTR/TXN LOGIC
+  // FILTER LOGIC
+  const getFilteredData = () => {
+    const now = Date.now();
+    return history.filter((item) => {
+      let dateMatch = true;
+      if (dateFilter === "today") dateMatch = (now - item.createdAt) <= 86400000;
+      else if (dateFilter === "7days") dateMatch = (now - item.createdAt) <= 7 * 86400000;
+      else if (dateFilter === "30days") dateMatch = (now - item.createdAt) <= 30 * 86400000;
+
+      let amtMatch = true;
+      const amt = item.paidAmount || item.basePrice;
+      if (amountFilter === "under500") amtMatch = amt < 500;
+      else if (amountFilter === "500-2000") amtMatch = amt >= 500 && amt <= 2000;
+      else if (amountFilter === "over2000") amtMatch = amt > 2000;
+
+      return dateMatch && amtMatch;
+    });
+  };
+
+  const filteredHistory = getFilteredData();
+
+  // EXPORT EXCEL FUNCTION
+  const exportExcel = () => {
+    const dataToExport = filteredHistory.map((item, index) => ({
+      "S.No": index + 1,
+      "Date & Time": new Date(item.createdAt).toLocaleString("en-IN"),
+      "Payer Name": item.payerName || "Guest",
+      "Payer Mobile": item.payerNumber || "N/A",
+      "Status": item.status.toUpperCase(),
+      "Base Amount (Rs)": item.basePrice,
+      "Penalty Amount (Rs)": item.paidAmount ? item.paidAmount - item.basePrice : 0,
+      "Total Paid (Rs)": item.paidAmount || 0,
+      "Transaction ID / UTR": item.utrNumber || "Not Scanned/Available",
+      "Receiver UPI ID": item.upiId || "N/A",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Payment History");
+    XLSX.writeFile(workbook, "DASH_Payment_Report.xlsx");
+  };
+
+  // EXPORT PDF LIST FUNCTION (Badhiya Table wali PDF)
+  const exportPDFList = () => {
+    const doc = new jsPDF({ orientation: "landscape" });
+    
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(15, 118, 110);
+    doc.text("DASH UPI Console - Payment Report", 14, 20);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Generated on: ${new Date().toLocaleString("en-IN")}`, 14, 28);
+
+    const tableData = filteredHistory.map((item, index) => [
+      index + 1,
+      new Date(item.createdAt).toLocaleDateString("en-IN"),
+      item.payerName || "Guest",
+      `Rs. ${item.paidAmount || item.basePrice}`,
+      item.status.toUpperCase(),
+      item.utrNumber || "N/A",
+      item.upiId || "N/A"
+    ]);
+
+    autoTable(doc, {
+      startY: 35,
+      head: [["S.No", "Date", "Payer Name", "Total Amount", "Status", "TXN ID (UTR)", "UPI ID"]],
+      body: tableData,
+      theme: "grid",
+      headStyles: { fillColor: [15, 118, 110], textColor: [255, 255, 255], fontStyle: "bold" },
+      styles: { fontSize: 9, cellPadding: 4 },
+      columnStyles: { 0: { cellWidth: 15 } }
+    });
+
+    doc.save("DASH_Payment_Report.pdf");
+  };
+
+  // 100% PERFECTLY ALIGNED CHECKBOOK PDF DESIGN (Original)
   const handleReceipt = (item, action) => {
     const doc = new jsPDF({ orientation: "landscape", format: [210, 110] });
 
     const startX = 10;
-    const startY = 10;
+    const innerW = 190;
     const endX = 200; 
-    const col1 = 15; 
-    const col2 = 45; 
-    const col3 = 50; 
-    const colRight = 155; 
-    const rowHeader = 32;
-    const row1 = 45;
-    const row2 = 60;
-    const row3 = 75;
-    const rowFooter = 88;
+    const colLabel = 15;
+    const colColon = 42;
+    const colValue = 46;
+    const boxX = 155; 
+    const boxW = 45;
 
-    // Outer Border
     doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.4);
-    doc.rect(startX, startY, 190, 90);
+    doc.rect(startX, 10, innerW, 90);
 
-    // Header Title
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("PAYMENT RECEIPT", col1, 24);
+    doc.text("PAYMENT RECEIPT", colLabel, 24);
 
-    // No & Date (With UTR OCR result logic)
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    
     doc.text("No", 125, 18);
     doc.text(":", 135, 18);
     
     const displayId = item.utrNumber || `TXN-${item.id.substring(0, 8).toUpperCase()}`;
-    
-    // Agar "not available" ka message bada hai, to line width fix rakhne ke liye font chota karega
     if (displayId.length > 15) {
       doc.setFontSize(8);
       doc.text(displayId, 140, 18);
-      doc.setFontSize(10); 
+      doc.setFontSize(10);
     } else {
       doc.text(displayId, 140, 18);
     }
@@ -138,65 +213,65 @@ export default function PaymentHistory() {
     doc.line(140, 28, 195, 28);
 
     doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.5);
-    doc.line(startX, rowHeader, endX, rowHeader);
+    doc.setLineWidth(0.4);
+    doc.line(startX, 32, endX, 32);
 
-    // Row 1: Received From
+    const line1Y = 46;
     doc.setFontSize(10);
-    doc.text("Received From", col1, 40);
-    doc.text(":", col2, 40);
-    doc.text(`${item.payerName || "Guest"} (${item.payerNumber || "N/A"})`, col3, 40);
-
+    doc.text("Received From", colLabel, 40);
+    doc.text(":", colColon, 40);
+    doc.text(`${item.payerName || "Guest"} (${item.payerNumber || "N/A"})`, colValue, 40);
+    
     doc.setDrawColor(91, 155, 213);
     doc.setLineWidth(0.2);
-    doc.line(startX, row1, endX, row1);
+    doc.line(startX, line1Y, endX, line1Y); 
 
-    // Row 2: Amount
+    const line2Y = 62;
     doc.setTextColor(0, 0, 0);
-    doc.text("Amount", col1, 54);
-    doc.text(":", col2, 54);
+    doc.text("Amount", colLabel, 55);
+    doc.text(":", colColon, 55);
 
     const totalAmount = item.paidAmount || item.basePrice;
     
     doc.setTextColor(91, 155, 213);
     doc.setFont("helvetica", "italic");
-    doc.text(numberToWords(totalAmount), col3, 54);
+    const words = doc.splitTextToSize(numberToWords(totalAmount), boxX - colValue - 5);
+    doc.text(words, colValue, 55);
 
     doc.setFillColor(218, 227, 243); 
     doc.setDrawColor(91, 155, 213);
     doc.setLineWidth(0.3);
-    doc.rect(colRight, row1, 45, 15, "FD"); 
+    doc.rect(boxX, line1Y, boxW, line2Y - line1Y, "FD");
 
     doc.setTextColor(0, 0, 0);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
-    doc.text("Rs.", colRight + 3, 55);
-    doc.text(new Intl.NumberFormat("en-IN").format(totalAmount), colRight + 42, 55, { align: "right" });
+    doc.text("Rs.", boxX + 4, 56);
+    doc.text(new Intl.NumberFormat("en-IN").format(totalAmount), boxX + boxW - 4, 56, { align: "right" });
 
     doc.setLineWidth(0.2);
-    doc.line(startX, row2, colRight, row2);
+    doc.line(startX, line2Y, boxX, line2Y);
 
-    // Row 3: Payment For
+    const line3Y = 78;
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text("Payment For", col1, 69);
-    doc.text(":", col2, 69);
-    doc.text(`Base Amount + Penalty (${item.penaltyAmount} per ${item.penaltyTime}m)`, col3, 69);
+    doc.text("Payment For", colLabel, 71);
+    doc.text(":", colColon, 71);
+    doc.text(`Base Amount + Penalty (${item.penaltyAmount} per ${item.penaltyTime}m)`, colValue, 71);
 
-    doc.line(startX, row3, colRight, row3);
+    doc.line(startX, line3Y, boxX, line3Y);
 
-    // Row 4: Received By & Sign
-    doc.text("Received By", col1, 83);
-    doc.text(":", col2, 83);
-    doc.text(item.upiId || "N/A", col3, 83);
+    const footerY = 88;
+    doc.text("Received By", colLabel, 84);
+    doc.text(":", colColon, 84);
+    doc.text(item.upiId || "N/A", colValue, 84);
 
     doc.setDrawColor(91, 155, 213);
-    doc.rect(colRight, row2, 45, 28, "D"); 
-    doc.text("Sign", colRight + 22.5, 85, { align: "center" });
+    doc.rect(boxX, line2Y, boxW, footerY - line2Y, "D"); 
+    doc.text("Sign", boxX + (boxW / 2), footerY - 4, { align: "center" });
 
-    // Footer Banner
     doc.setFillColor(91, 155, 213);
-    doc.rect(startX, rowFooter, 190, 12, "F"); 
+    doc.rect(startX, footerY, innerW, 12, "F"); 
 
     if (item.screenshotUrl) {
       doc.setTextColor(255, 255, 255);
@@ -212,16 +287,16 @@ export default function PaymentHistory() {
     }
   };
 
-  const paidCount = history.filter((item) => item.status === "paid").length;
-  const pendingCount = history.length - paidCount;
-  const paidAmount = history
+  const paidCount = filteredHistory.filter((item) => item.status === "paid").length;
+  const pendingCount = filteredHistory.length - paidCount;
+  const paidAmount = filteredHistory
     .filter((item) => item.status === "paid")
     .reduce((sum, item) => sum + (Number(item.paidAmount) || 0), 0);
 
   return (
     <section className="ledger-section">
       <div className="ledger-summary">
-        <div><span>Total Links</span><strong>{history.length}</strong></div>
+        <div><span>Total Links</span><strong>{filteredHistory.length}</strong></div>
         <div><span>Paid</span><strong>{paidCount}</strong></div>
         <div><span>Pending</span><strong>{pendingCount}</strong></div>
         <div><span>Collected</span><strong>{formatAmount(paidAmount)}</strong></div>
@@ -235,8 +310,39 @@ export default function PaymentHistory() {
         <p>Receipt, proof, payer and penalty details in one compact list.</p>
       </div>
 
+      {/* NAYA FILTERS AND EXPORT CONTROLS AREA */}
+      <div className="ledger-controls">
+        <div className="filter-group">
+          <div className="filter-item">
+            <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
+              <option value="all">All Dates</option>
+              <option value="today">Today</option>
+              <option value="7days">Last 7 Days</option>
+              <option value="30days">Last 30 Days</option>
+            </select>
+          </div>
+          <div className="filter-item">
+            <select value={amountFilter} onChange={(e) => setAmountFilter(e.target.value)}>
+              <option value="all">All Amounts</option>
+              <option value="under500">Under ₹500</option>
+              <option value="500-2000">₹500 - ₹2000</option>
+              <option value="over2000">Above ₹2000</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="export-group">
+          <button onClick={exportPDFList} className="btn-export pdf">
+             PDF Export
+          </button>
+          <button onClick={exportExcel} className="btn-export excel">
+             Excel Export
+          </button>
+        </div>
+      </div>
+
       <div className="ledger-list">
-        {history.map((item) => (
+        {filteredHistory.map((item) => (
           <article className="ledger-row" key={item.id}>
             <div className="ledger-person">
               <div className="ledger-avatar">{(item.payerName || "G").charAt(0).toUpperCase()}</div>
@@ -250,7 +356,6 @@ export default function PaymentHistory() {
             <div className="ledger-detail">
               <span>Base</span>
               <strong>{formatAmount(item.basePrice)}</strong>
-              {/* UTR Number dikhayega agar scan hua hai, nahi toh sirf UPI ID dikhayega */}
               <small>{item.utrNumber || item.upiId}</small>
             </div>
 
@@ -291,10 +396,10 @@ export default function PaymentHistory() {
         ))}
       </div>
 
-      {history.length === 0 && (
+      {filteredHistory.length === 0 && (
         <div className="ledger-empty">
           <strong>No records found</strong>
-          <p>Payment records will appear here after links are created.</p>
+          <p>Try adjusting your filters or wait for new payments.</p>
         </div>
       )}
     </section>
