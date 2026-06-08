@@ -87,6 +87,25 @@ export default function PaymentHistory() {
     }
   };
 
+  // NAYA FEATURE: WHATSAPP AUTO-DRAFT REMINDER
+  const handleSendReminder = (item) => {
+    if (!item.payerNumber) {
+      alert("Payer WhatsApp number is not available for this link!");
+      return;
+    }
+    
+    const link = `${window.location.origin}/pay/${item.id}`;
+    const message = `Hello ${item.payerName || 'there'},\n\nThis is an automated reminder that your payment of Rs. ${item.basePrice} is currently pending.\n\n⚠️ *Important Notice:* A penalty of Rs. ${item.penaltyAmount} is being added every ${item.penaltyTime} minutes for late payment.\n\nPlease complete your payment securely using the link below:\n${link}\n\nThank you.`;
+    
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Number format setup
+    let phone = item.payerNumber.replace(/\D/g, '');
+    if (phone.length === 10) phone = '91' + phone; // Auto add Indian code if missing
+    
+    window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+  };
+
   const getFilteredData = () => {
     const now = Date.now();
     return history.filter((item) => {
@@ -375,9 +394,13 @@ export default function PaymentHistory() {
               ) : (
                 <div className="pending-actions">
                   <span className="waiting-text">Waiting for payment</span>
-                  <div>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                    {/* NAYA WHATSAPP REMINDER BUTTON */}
+                    <button onClick={() => handleSendReminder(item)} className="btn-remind">
+                       WA Remind
+                    </button>
                     <button onClick={() => handleCopyLink(item.id)} className="btn-copy">
-                      {copiedId === item.id ? "Copied!" : "Copy Link"}
+                      {copiedId === item.id ? "Copied!" : "Copy"}
                     </button>
                     <button onClick={() => handleDelete(item.id)} className="btn-delete">
                       Delete

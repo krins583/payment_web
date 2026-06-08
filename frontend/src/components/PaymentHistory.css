@@ -286,6 +286,18 @@
   background: rgba(255, 77, 109, 0.05) !important;
 }
 
+/* WhatsApp Remind Button Styles */
+.btn-remind {
+  color: #00ff88 !important;
+  border-color: rgba(0, 255, 136, 0.3) !important;
+  background: rgba(0, 255, 136, 0.05) !important;
+}
+
+.btn-remind:hover {
+  background: rgba(0, 255, 136, 0.15) !important;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+}
+
 .btn-delete:hover {
   background: rgba(255, 77, 109, 0.15) !important;
   box-shadow: 0 0 15px rgba(255, 77, 109, 0.2);
