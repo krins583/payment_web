@@ -1,52 +1,62 @@
+/* --- PREMIUM CYBERPUNK NAVIGATION --- */
 .paynav {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   width: fit-content;
-  margin: 18px 0 0;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: rgba(255, 253, 248, 0.78);
-  box-shadow: 0 10px 28px rgba(54, 44, 28, 0.08);
+  margin: 20px 0 0;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .paynav-btn {
-  min-height: 46px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 13px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 1px solid transparent;
+  border-radius: 14px;
   background: transparent;
-  color: var(--muted);
+  color: #88c0c7;
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 900;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+  gap: 10px;
+  transition: all 0.3s ease;
 }
 
 .paynav-btn span {
   color: inherit;
-  opacity: 0.6;
-  font-size: 11px;
+  opacity: 0.5;
+  font-size: 12px;
   font-weight: 950;
+  letter-spacing: 0.05em;
 }
 
-.paynav-btn:hover {
-  background: #f3eadc;
-  color: var(--ink);
+.paynav-btn:hover:not(.active) {
+  background: rgba(0, 242, 254, 0.05);
+  color: #e0f7fa;
 }
 
 .paynav-btn.active {
-  color: #fff8e7;
-  background: var(--teal-dark);
-  box-shadow: 0 12px 24px rgba(15, 118, 110, 0.20);
+  color: #00f2fe;
+  background: rgba(0, 242, 254, 0.1);
+  border-color: rgba(0, 242, 254, 0.3);
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.15), inset 0 0 10px rgba(0, 242, 254, 0.05);
+}
+
+.paynav-btn.active span {
+  opacity: 1;
+  color: #00f2fe;
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
 }
 
 .paynav-btn:focus-visible {
-  outline: 3px solid rgba(15, 118, 110, 0.22);
-  outline-offset: 3px;
+  outline: 2px solid var(--cyber-cyan);
+  outline-offset: 2px;
 }
 
 @media (max-width: 620px) {

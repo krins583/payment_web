@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { QRCodeCanvas } from "qrcode.react";
-import Tesseract from "tesseract.js"; // <-- OCR Library Import
+import Tesseract from "tesseract.js"; 
 import "./Payment.css";
 
 const TimerIcon = () => (
@@ -22,7 +22,7 @@ export default function Payment() {
 
   const [screenshot, setScreenshot] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [loadingText, setLoadingText] = useState("Mark as Paid"); // Dynamic button text
+  const [loadingText, setLoadingText] = useState("Mark as Paid"); 
 
   useEffect(() => {
     const fetchPaymentInfo = async () => {
@@ -74,17 +74,15 @@ export default function Payment() {
     if (!screenshot) return alert("Please upload a payment screenshot first.");
 
     setUploading(true);
-    setLoadingText("Scanning screenshot..."); // Step 1: Scan shuru
+    setLoadingText("Scanning screenshot..."); 
 
     try {
-      // OCR: Image read karke text nikalna
       const { data: { text } } = await Tesseract.recognize(screenshot, 'eng');
       
-      // Regex: 12-digit UPI UTR number dhoondna
       const utrMatch = text.match(/\b\d{12}\b/);
       const finalUtr = utrMatch ? utrMatch[0] : "TXN ID in SS not available";
 
-      setLoadingText("Uploading proof..."); // Step 2: Upload shuru
+      setLoadingText("Uploading proof..."); 
 
       const imgData = new FormData();
       imgData.append("image", screenshot);
@@ -94,13 +92,13 @@ export default function Payment() {
       );
       const uploadedUrl = imgbbRes.data.data.url;
 
-      setLoadingText("Finalizing payment..."); // Step 3: Backend ko bhejna
+      setLoadingText("Finalizing payment..."); 
 
       await axios.post("https://payment-web-1tfd.onrender.com/api/mark-paid", {
         linkId,
         screenshotUrl: uploadedUrl,
         finalAmount: currentAmount,
-        utrNumber: finalUtr // Extracted ID database bheji ja rahi hai
+        utrNumber: finalUtr 
       });
 
       setIsPaid(true);
@@ -146,7 +144,8 @@ export default function Payment() {
             </div>
 
             <div className="qr-shell">
-              <QRCodeCanvas value={upiString} size={170} bgColor="#fffdf8" fgColor="#15130f" level="M" includeMargin />
+              {/* QR Code colors set to White background and Black foreground for proper scanning */}
+              <QRCodeCanvas value={upiString} size={180} bgColor="#ffffff" fgColor="#000000" level="M" includeMargin />
               <span>Scan with another device</span>
             </div>
 

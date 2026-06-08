@@ -9,7 +9,6 @@ export default function PaymentHistory() {
   const [history, setHistory] = useState([]);
   const [copiedId, setCopiedId] = useState(null);
   
-  // Naye Filters State
   const [dateFilter, setDateFilter] = useState("all");
   const [amountFilter, setAmountFilter] = useState("all");
 
@@ -88,7 +87,6 @@ export default function PaymentHistory() {
     }
   };
 
-  // FILTER LOGIC
   const getFilteredData = () => {
     const now = Date.now();
     return history.filter((item) => {
@@ -109,7 +107,6 @@ export default function PaymentHistory() {
 
   const filteredHistory = getFilteredData();
 
-  // EXPORT EXCEL FUNCTION
   const exportExcel = () => {
     const dataToExport = filteredHistory.map((item, index) => ({
       "S.No": index + 1,
@@ -130,7 +127,6 @@ export default function PaymentHistory() {
     XLSX.writeFile(workbook, "DASH_Payment_Report.xlsx");
   };
 
-  // EXPORT PDF LIST FUNCTION (Badhiya Table wali PDF)
   const exportPDFList = () => {
     const doc = new jsPDF({ orientation: "landscape" });
     
@@ -167,7 +163,6 @@ export default function PaymentHistory() {
     doc.save("DASH_Payment_Report.pdf");
   };
 
-  // 100% PERFECTLY ALIGNED CHECKBOOK PDF DESIGN (Original)
   const handleReceipt = (item, action) => {
     const doc = new jsPDF({ orientation: "landscape", format: [210, 110] });
 
@@ -310,7 +305,6 @@ export default function PaymentHistory() {
         <p>Receipt, proof, payer and penalty details in one compact list.</p>
       </div>
 
-      {/* NAYA FILTERS AND EXPORT CONTROLS AREA */}
       <div className="ledger-controls">
         <div className="filter-group">
           <div className="filter-item">

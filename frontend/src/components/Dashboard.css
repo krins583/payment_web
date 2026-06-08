@@ -1,15 +1,23 @@
+/* --- PREMIUM CYBERPUNK DASHBOARD THEME --- */
 :root {
-  --ink: #17140f;
-  --muted: #71695d;
-  --paper: #fbf7ef;
-  --card: #fffdf8;
-  --line: #e7dbc9;
-  --teal: #0f766e;
-  --teal-dark: #0b4f49;
-  --gold: #d8b56d;
-  --gold-soft: #fff3d4;
-  --green: #087443;
-  --shadow: 0 18px 50px rgba(54, 44, 28, 0.12);
+  /* Overwriting old variables to auto-convert children components to Dark Mode */
+  --ink: #e0f7fa;
+  --muted: #88c0c7;
+  --paper: transparent;
+  --card: rgba(10, 10, 20, 0.55);
+  --line: rgba(0, 242, 254, 0.2);
+  --teal: #00f2fe;
+  --teal-dark: #00bac4;
+  --gold: #00f2fe;
+  --green: #00ff88;
+  --shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+
+  /* New Cyber Variables */
+  --cyber-bg: #050509;
+  --cyber-cyan: #00f2fe;
+  --cyber-cyan-soft: rgba(0, 242, 254, 0.12);
+  --glass-back: rgba(6, 6, 14, 0.65);
+  --glass-border: rgba(0, 242, 254, 0.25);
 }
 
 * {
@@ -18,17 +26,46 @@
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--cyber-bg);
+}
+
+.dashboard-wrapper {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--cyber-bg);
+}
+
+/* Background Image Layer */
+.dash-bg-layer {
+  position: fixed; /* Fixed taaki scroll karne par bg na hile */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.dash-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(5, 5, 9, 0.65) 0%, rgba(5, 5, 9, 0.95) 100%);
 }
 
 .paydash-page {
+  position: relative;
+  z-index: 1;
   min-height: 100vh;
   padding: 28px;
-  background:
-    radial-gradient(circle at top left, rgba(216, 181, 109, 0.20), transparent 32%),
-    linear-gradient(180deg, #fbf7ef 0%, #f4eadb 100%);
   color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+  overflow-y: auto;
 }
 
 .paydash-shell {
@@ -36,77 +73,96 @@ body {
   margin: 0 auto;
 }
 
+/* --- GLASSMORPHISM PANELS --- */
+.glass-panel {
+  background: var(--glass-back);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--cyber-cyan-soft);
+}
+
 .paydash-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
-  padding: 14px;
-  border: 1px solid var(--line);
+  margin-bottom: 22px;
+  padding: 16px 20px;
   border-radius: 22px;
-  background: rgba(255, 253, 248, 0.82);
-  box-shadow: 0 10px 28px rgba(54, 44, 28, 0.07);
 }
 
 .paydash-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-width: 0;
+  gap: 16px;
 }
 
+/* Hologram Logo (Matched from Login) */
 .paydash-logo {
   width: 50px;
   height: 50px;
-  border-radius: 17px;
-  display: grid;
-  place-items: center;
-  background: var(--teal-dark);
-  color: #fff8e7;
-  font-size: 24px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cyber-cyan);
+  color: var(--cyber-bg);
+  font-size: 22px;
   font-weight: 950;
-  box-shadow: 0 12px 26px rgba(15, 118, 110, 0.20);
-  flex: 0 0 auto;
+  position: relative;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
+}
+
+.paydash-logo::after {
+  content: "D";
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  color: var(--cyber-cyan);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 14px;
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.8) inset;
+  background: var(--glass-back);
 }
 
 .paydash-brand span {
-  color: var(--teal);
-  font-size: 12px;
+  color: var(--cyber-cyan);
+  font-size: 11px;
   font-weight: 950;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  text-shadow: 0 0 8px var(--cyber-cyan-soft);
 }
 
 .paydash-brand h1 {
-  margin: 3px 0 0;
+  margin: 4px 0 0;
   color: var(--ink);
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1.2;
   font-weight: 950;
-  letter-spacing: 0;
+  text-shadow: 0 0 10px rgba(224, 247, 250, 0.2);
 }
 
-/* Naya Layout Header buttons ke liye */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.paydash-status {
+/* Cyber Chips & Status */
+.cyber-chip {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-height: 38px;
-  padding: 0 13px;
-  border: 1px solid #cfe8df;
+  padding: 0 14px;
+  border: 1px solid rgba(0, 255, 136, 0.3);
   border-radius: 999px;
-  background: #eefbf4;
-  color: var(--teal-dark);
+  background: rgba(0, 255, 136, 0.05);
+  color: var(--green);
   font-size: 13px;
   font-weight: 900;
-  white-space: nowrap;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
 }
 
 .status-dot {
@@ -114,58 +170,53 @@ body {
   height: 8px;
   border-radius: 99px;
   background: var(--green);
-  box-shadow: 0 0 0 4px rgba(8, 116, 67, 0.12);
+  box-shadow: 0 0 8px var(--green);
 }
 
-/* Aesthetic Logout Button Styling */
+.cyber-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(0, 255, 136, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+}
+
+/* Disconnect Button */
 .logout-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 38px;
-  padding: 0 16px;
-  border: 1px solid #fecdca;
+  padding: 0 18px;
+  border: 1px solid #fc8181;
   border-radius: 999px;
-  background: #fef3f2;
-  color: #b42318;
+  background: rgba(197, 48, 48, 0.1);
+  color: #fc8181;
   font-size: 13px;
   font-weight: 900;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(197, 48, 48, 0.15);
 }
 
 .logout-btn:hover {
-  background: #fee4e2;
-  border-color: #fca5a5;
+  background: rgba(197, 48, 48, 0.25);
+  box-shadow: 0 0 15px rgba(197, 48, 48, 0.4);
+  color: #fff;
 }
 
+/* Hero Section */
 .paydash-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
   gap: 20px;
   align-items: stretch;
-  padding: 30px;
-  border: 1px solid #2a251c;
-  border-radius: 30px;
-  background:
-    linear-gradient(135deg, rgba(31, 26, 19, 0.98), rgba(55, 43, 26, 0.96)),
-    #1f1a13;
-  color: #fff8e7;
-  box-shadow: var(--shadow);
-  overflow: hidden;
+  padding: 35px;
+  border-radius: 28px;
   position: relative;
-}
-
-.paydash-hero::after {
-  content: "";
-  position: absolute;
-  right: -80px;
-  top: -90px;
-  width: 260px;
-  height: 260px;
-  border-radius: 999px;
-  background: rgba(216, 181, 109, 0.18);
-  pointer-events: none;
+  overflow: hidden;
 }
 
 .hero-copy-block,
@@ -176,75 +227,81 @@ body {
 
 .paydash-kicker {
   margin: 0 0 12px;
-  color: var(--gold);
+  color: var(--cyber-cyan);
   font-size: 12px;
   font-weight: 950;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .paydash-hero h2 {
   max-width: 780px;
   margin: 0;
-  color: #fff8e7;
-  font-size: clamp(34px, 5vw, 58px);
-  line-height: 1.02;
-  letter-spacing: 0;
+  color: #ffffff;
+  font-size: clamp(32px, 5vw, 54px);
+  line-height: 1.05;
   font-weight: 950;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 .hero-description {
   max-width: 680px;
-  margin: 15px 0 0;
-  color: rgba(255, 248, 231, 0.78);
+  margin: 16px 0 0;
+  color: var(--muted);
   font-size: 16px;
-  line-height: 1.65;
-  font-weight: 650;
+  line-height: 1.6;
+  font-weight: 600;
 }
 
 .hero-ledger {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
-.hero-ledger div {
+.glass-chip {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding: 17px;
-  border: 1px solid rgba(255, 248, 231, 0.16);
-  border-radius: 18px;
-  background: rgba(255, 248, 231, 0.08);
+  padding: 16px 20px;
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  background: rgba(0, 242, 254, 0.03);
+  transition: all 0.3s ease;
 }
 
-.hero-ledger span {
-  color: rgba(255, 248, 231, 0.68);
+.glass-chip:hover {
+  background: rgba(0, 242, 254, 0.08);
+  border-color: var(--cyber-cyan);
+  transform: translateX(-2px);
+}
+
+.glass-chip span {
+  color: var(--muted);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
-.hero-ledger strong {
-  color: #ffffff;
-  font-size: 22px;
+.glass-chip strong {
+  color: var(--cyber-cyan);
+  font-size: 20px;
   font-weight: 950;
+  text-shadow: 0 0 10px var(--cyber-cyan-soft);
 }
 
 .paydash-content {
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
+/* Media Queries */
 @media (max-width: 920px) {
   .paydash-page {
     padding: 18px;
   }
-
   .paydash-hero {
     grid-template-columns: 1fr;
   }
-
   .hero-ledger {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -254,36 +311,17 @@ body {
   .paydash-page {
     padding: 12px;
   }
-
   .paydash-header {
-    align-items: stretch;
     flex-direction: column;
+    align-items: stretch;
   }
-
   .header-actions {
-    width: 100%;
     justify-content: space-between;
   }
-
-  .paydash-status {
-    justify-content: center;
-    flex: 1;
-  }
-
   .paydash-hero {
-    padding: 20px;
-    border-radius: 24px;
+    padding: 24px;
   }
-
-  .paydash-hero h2 {
-    font-size: 32px;
-  }
-
   .hero-ledger {
     grid-template-columns: 1fr;
-  }
-
-  .paydash-brand h1 {
-    font-size: 17px;
   }
 }
