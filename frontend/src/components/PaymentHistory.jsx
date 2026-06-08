@@ -24,7 +24,7 @@ export default function PaymentHistory() {
     
     fetchHistory();
     // Har 1 minute mein ek baar refresh hoga, jo ki practical aur light hai
-const intervalId = setInterval(() => { fetchHistory(); }, 60000);
+const intervalId = setInterval(() => { fetchHistory(); }, 10000);
     return () => clearInterval(intervalId);
   }, []);
 
