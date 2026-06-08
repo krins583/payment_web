@@ -76,7 +76,7 @@ body {
 /* --- GLASSMORPHISM PANELS --- */
 .glass-panel {
   background: var(--glass-back);
-  backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(4px);
   border: 1px solid var(--glass-border);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--cyber-cyan-soft);
 }

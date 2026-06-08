@@ -64,7 +64,7 @@
   max-width: 440px;
   padding: 40px;
   background: var(--glass-back);
-  backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(4px);
   border: 1px solid var(--glass-border);
   border-radius: 28px;
   box-shadow: 

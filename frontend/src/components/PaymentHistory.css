@@ -5,7 +5,7 @@
   border: 1px solid var(--glass-border);
   border-radius: 26px;
   background: var(--glass-back);
-  backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(4px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px var(--cyber-cyan-soft);
 }
 
